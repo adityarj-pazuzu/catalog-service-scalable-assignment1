@@ -13,7 +13,6 @@ The Catalog Service manages products and inventory for the online store.
 ## Run Locally
 
 ```powershell
-cd D:\Mtech\Sem3\Scalable\Assignment\catalog-service
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 pip install -r requirements.txt
@@ -23,7 +22,6 @@ uvicorn app.main:app --host 0.0.0.0 --port 8001
 ## Run Tests
 
 ```powershell
-cd D:\Mtech\Sem3\Scalable\Assignment\catalog-service
 pytest
 ```
 
@@ -47,6 +45,98 @@ pre-commit run --all-files
 | GET | `/products/{product_id}` | Get product |
 | PATCH | `/products/{product_id}/stock` | Update stock |
 | POST | `/products/{product_id}/reserve` | Reserve stock |
+
+## Testing the API
+
+### Health Check
+
+**PowerShell:**
+
+```powershell
+Invoke-RestMethod http://localhost:8001/health
+```
+
+**Bash/Git Bash:**
+
+```bash
+curl http://localhost:8001/health
+```
+
+### Create a Product
+
+**PowerShell:**
+
+```powershell
+Invoke-RestMethod -Method Post -Uri http://localhost:8001/products -ContentType "application/json" -Body '{"name":"Laptop","description":"Student laptop","price":55000,"stock":10}'
+```
+
+**Bash/Git Bash:**
+
+```bash
+curl -X POST http://localhost:8001/products \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Laptop","description":"Student laptop","price":55000,"stock":10}'
+```
+
+### List Products
+
+**PowerShell:**
+
+```powershell
+Invoke-RestMethod http://localhost:8001/products
+```
+
+**Bash/Git Bash:**
+
+```bash
+curl http://localhost:8001/products
+```
+
+### Get Product Details
+
+**PowerShell:**
+
+```powershell
+Invoke-RestMethod http://localhost:8001/products/1
+```
+
+**Bash/Git Bash:**
+
+```bash
+curl http://localhost:8001/products/1
+```
+
+### Update Product Stock
+
+**PowerShell:**
+
+```powershell
+Invoke-RestMethod -Method Patch -Uri http://localhost:8001/products/1/stock -ContentType "application/json" -Body '{"quantity":5}'
+```
+
+**Bash/Git Bash:**
+
+```bash
+curl -X PATCH http://localhost:8001/products/1/stock \
+  -H "Content-Type: application/json" \
+  -d '{"quantity":5}'
+```
+
+### Reserve Product Stock
+
+**PowerShell:**
+
+```powershell
+Invoke-RestMethod -Method Post -Uri http://localhost:8001/products/1/reserve -ContentType "application/json" -Body '{"quantity":2}'
+```
+
+**Bash/Git Bash:**
+
+```bash
+curl -X POST http://localhost:8001/products/1/reserve \
+  -H "Content-Type: application/json" \
+  -d '{"quantity":2}'
+```
 
 ## Docker
 
@@ -82,6 +172,23 @@ Access the service:
 ```powershell
 minikube service catalog-service -n store-app
 ```
+
+### Kubernetes Dashboard
+
+Enable and open the dashboard:
+
+```powershell
+minikube dashboard
+```
+
+In the dashboard:
+
+- Select the namespace `store-app` then check the resources:
+  - Deployments: `catalog-service`
+  - Pods: running status and restart count
+  - Services: NodePort service exposure
+  - Logs: request handling and any service communication errors
+
 
 ## GitHub Actions
 
