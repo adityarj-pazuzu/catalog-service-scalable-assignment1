@@ -111,7 +111,7 @@ curl http://localhost:8001/products/1
 **PowerShell:**
 
 ```powershell
-Invoke-RestMethod -Method Patch -Uri http://localhost:8001/products/1/stock -ContentType "application/json" -Body '{"quantity":5}'
+Invoke-RestMethod -Method Patch -Uri http://localhost:8001/products/1/stock -ContentType "application/json" -Body '{"stock":15}'
 ```
 
 **Bash/Git Bash:**
@@ -119,7 +119,7 @@ Invoke-RestMethod -Method Patch -Uri http://localhost:8001/products/1/stock -Con
 ```bash
 curl -X PATCH http://localhost:8001/products/1/stock \
   -H "Content-Type: application/json" \
-  -d '{"quantity":5}'
+  -d '{"stock":15}'
 ```
 
 ### Reserve Product Stock
@@ -127,7 +127,7 @@ curl -X PATCH http://localhost:8001/products/1/stock \
 **PowerShell:**
 
 ```powershell
-Invoke-RestMethod -Method Post -Uri http://localhost:8001/products/1/reserve -ContentType "application/json" -Body '{"quantity":2}'
+Invoke-RestMethod -Method Post -Uri http://localhost:8001/products/1/reserve -ContentType "application/json" -Body '{"stock":2}'
 ```
 
 **Bash/Git Bash:**
@@ -135,7 +135,7 @@ Invoke-RestMethod -Method Post -Uri http://localhost:8001/products/1/reserve -Co
 ```bash
 curl -X POST http://localhost:8001/products/1/reserve \
   -H "Content-Type: application/json" \
-  -d '{"quantity":2}'
+  -d '{"stock":2}'
 ```
 
 ## Docker
