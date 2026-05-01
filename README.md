@@ -127,7 +127,7 @@ curl -X PATCH http://localhost:8001/products/1/stock \
 **PowerShell:**
 
 ```powershell
-Invoke-RestMethod -Method Post -Uri http://localhost:8001/products/1/reserve -ContentType "application/json" -Body '{"stock":2}'
+Invoke-RestMethod -Method Post -Uri http://localhost:8001/products/1/reserve -ContentType "application/json" -Body '{"quantity":2}'
 ```
 
 **Bash/Git Bash:**
@@ -135,7 +135,7 @@ Invoke-RestMethod -Method Post -Uri http://localhost:8001/products/1/reserve -Co
 ```bash
 curl -X POST http://localhost:8001/products/1/reserve \
   -H "Content-Type: application/json" \
-  -d '{"stock":2}'
+  -d '{"quantity":2}'
 ```
 
 ## Docker
