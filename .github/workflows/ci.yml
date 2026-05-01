@@ -62,4 +62,3 @@ jobs:
 
       - name: Build image
         run: docker build -t catalog-service:ci .
-

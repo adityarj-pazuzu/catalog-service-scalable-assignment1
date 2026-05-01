@@ -1,12 +1,10 @@
 import os
 import sqlite3
-from contextlib import contextmanager
-from contextlib import asynccontextmanager
+from contextlib import asynccontextmanager, contextmanager
 from typing import Annotated
 
 from fastapi import Depends, FastAPI, HTTPException, status
 from pydantic import BaseModel, Field
-
 
 DATABASE_PATH = os.getenv("DATABASE_PATH", "catalog.db")
 
@@ -72,8 +70,7 @@ def row_to_product(row: sqlite3.Row) -> Product:
 def initialize_database() -> None:
     """Create the products table if it does not already exist."""
     with db_session() as connection:
-        connection.execute(
-            """
+        connection.execute("""
             CREATE TABLE IF NOT EXISTS products (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 name TEXT NOT NULL,
@@ -81,8 +78,7 @@ def initialize_database() -> None:
                 price REAL NOT NULL,
                 stock INTEGER NOT NULL
             )
-            """
-        )
+            """)
 
 
 def database_dependency():
@@ -111,7 +107,9 @@ def create_product(product: ProductCreate, database: Database) -> Product:
         (product.name, product.description, product.price, product.stock),
     )
     product_id = cursor.lastrowid
-    row = database.execute("SELECT * FROM products WHERE id = ?", (product_id,)).fetchone()
+    row = database.execute(
+        "SELECT * FROM products WHERE id = ?", (product_id,)
+    ).fetchone()
     return row_to_product(row)
 
 
@@ -125,33 +123,49 @@ def list_products(database: Database) -> list[Product]:
 @app.get("/products/{product_id}", response_model=Product)
 def get_product(product_id: int, database: Database) -> Product:
     """Return a single product by ID."""
-    row = database.execute("SELECT * FROM products WHERE id = ?", (product_id,)).fetchone()
+    row = database.execute(
+        "SELECT * FROM products WHERE id = ?", (product_id,)
+    ).fetchone()
     if row is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Product not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Product not found"
+        )
     return row_to_product(row)
 
 
 @app.patch("/products/{product_id}/stock", response_model=Product)
 def update_stock(product_id: int, update: StockUpdate, database: Database) -> Product:
     """Update the available stock for an existing product."""
-    row = database.execute("SELECT * FROM products WHERE id = ?", (product_id,)).fetchone()
+    row = database.execute(
+        "SELECT * FROM products WHERE id = ?", (product_id,)
+    ).fetchone()
     if row is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Product not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Product not found"
+        )
 
     database.execute(
         "UPDATE products SET stock = ? WHERE id = ?",
         (update.stock, product_id),
     )
-    updated_row = database.execute("SELECT * FROM products WHERE id = ?", (product_id,)).fetchone()
+    updated_row = database.execute(
+        "SELECT * FROM products WHERE id = ?", (product_id,)
+    ).fetchone()
     return row_to_product(updated_row)
 
 
 @app.post("/products/{product_id}/reserve", response_model=Product)
-def reserve_stock(product_id: int, reservation: StockReservation, database: Database) -> Product:
+def reserve_stock(
+    product_id: int, reservation: StockReservation, database: Database
+) -> Product:
     """Reserve product stock when an order is placed."""
-    row = database.execute("SELECT * FROM products WHERE id = ?", (product_id,)).fetchone()
+    row = database.execute(
+        "SELECT * FROM products WHERE id = ?", (product_id,)
+    ).fetchone()
     if row is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Product not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Product not found"
+        )
 
     if row["stock"] < reservation.quantity:
         raise HTTPException(
@@ -164,5 +178,7 @@ def reserve_stock(product_id: int, reservation: StockReservation, database: Data
         "UPDATE products SET stock = ? WHERE id = ?",
         (new_stock, product_id),
     )
-    updated_row = database.execute("SELECT * FROM products WHERE id = ?", (product_id,)).fetchone()
+    updated_row = database.execute(
+        "SELECT * FROM products WHERE id = ?", (product_id,)
+    ).fetchone()
     return row_to_product(updated_row)
